@@ -38,31 +38,25 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  applicationName: 'zhangyu.dev',
+  applicationName: 'qingzt.blog',
   authors: {
-    name: 'zhangyu1818',
-    url: 'https://github.com/zhangyu1818',
+    name: 'qingzt',
+    url: 'https://github.com/qingzt',
   },
-  creator: 'zhangyu1818',
+  creator: 'qingzt',
   description:
-    'Dive into front-end development with a focus on React, cutting-edge frameworks, JavaScript, TypeScript, Swift, Animation and more',
+    'Dive into front-end development with a focus on C++',
   generator: 'Next.js',
   keywords: [
-    'Front-end Development',
     'React',
-    'JavaScript',
-    'TypeScript',
-    'CSS',
-    'Animation',
-    'Swift',
   ],
-  publisher: 'zhangyu1818',
+  publisher: 'qingzt',
   title: {
-    absolute: 'zhangyu.dev',
-    template: '%s | zhangyu.dev',
+    absolute: 'qingzt.blog',
+    template: '%s | qingzt.blog',
   },
   verification: {
-    google: 'ULSANpODFw1TULe1QTOUFT8z8QXPVIA1MRTMQL7PAbw',
+    google: '',
   },
 }
 

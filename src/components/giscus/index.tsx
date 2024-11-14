@@ -21,7 +21,7 @@ export function GiscusScript(props: GiscusScriptProps) {
         mapping='number'
         reactionsEnabled='1'
         repo={repo}
-        repoId='MDEwOlJlcG9zaXRvcnkzMjk0OTk1NjU='
+        repoId='R_kgDONPL5dA'
         term={`${number}`}
         theme={isDark ? 'dark' : 'light'}
       />

@@ -56,14 +56,14 @@ export const queryProfileREADME = cache(async () => {
 
   if (masterResult.status === 'fulfilled') {
     const { repository } = masterResult.value
-    if (repository?.object.text) {
+    if (repository?.object?.text) {
       return masterResult.value
     }
   }
 
   if (mainResult.status === 'fulfilled') {
     const { repository } = mainResult.value
-    if (repository?.object.text) {
+    if (repository?.object?.text) {
       return mainResult.value
     }
   }
