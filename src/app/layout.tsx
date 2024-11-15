@@ -38,7 +38,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  applicationName: 'qingzt.blog',
+  applicationName: 'Qingzt Blog',
   authors: {
     name: 'qingzt',
     url: 'https://github.com/qingzt',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   ],
   publisher: 'qingzt',
   title: {
-    absolute: 'qingzt.blog',
+    absolute: 'Qingzt Blog',
     template: '%s | qingzt.blog',
   },
   verification: {
