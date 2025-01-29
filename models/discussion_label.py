@@ -27,12 +27,13 @@ from models.discussion import DiscussionModel
 from models.lable import LabelModel
 
 class Discussion_LableModel(Model):
-    discussion_id = ForeignKeyField(DiscussionModel, backref='discussion_labels',on_delete='CASCADE', primary_key=True)
-    label_id = ForeignKeyField(LabelModel, backref='discussion_labels', on_delete='CASCADE', primary_key=True)
+    discussion_id = ForeignKeyField(DiscussionModel, backref='discussion_labels',on_delete='CASCADE')
+    label_id = ForeignKeyField(LabelModel, backref='discussion_labels', on_delete='CASCADE')
     
     class Meta:
         database = db
         table_name = 'discussion_labels'
+        primary_key = CompositeKey('discussion_id', 'label_id')
         
     @staticmethod
     def fromDiscussion_Label(discussion_label):
