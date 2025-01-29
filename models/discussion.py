@@ -52,11 +52,7 @@ class DiscussionModel(Model):
     def toDiscussion(self):
         discussion = Discussion()
         for key, _ in discussion.__dict__.items():
-                discussion.__dict__[key] = self.__dict__[key]
+            if key == "labels":
+                continue
+            discussion.__dict__[key] = getattr(self, key)
         return discussion
-    
-    def __str__(self):
-        s=""
-        for key, value in self.__dict__.items():
-            s += f"{key}: {value}\n"
-        return s

@@ -45,11 +45,5 @@ class Discussion_LableModel(Model):
     def toDiscussion_Label(self):
         discussion_label = Discussion_Label()
         for key, _ in discussion_label.__dict__.items():
-                discussion_label.__dict__[key] = self.__dict__[key]
+                discussion_label.__dict__[key] = getattr(self, key)
         return discussion_label
-    
-    def __str__(self):
-        s=""
-        for key, value in self.__dict__.items():
-            s += f"{key}: {value}\n"
-        return s
