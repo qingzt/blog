@@ -27,8 +27,8 @@ from models.discussion import DiscussionModel
 from models.lable import LabelModel
 
 class Discussion_LableModel(Model):
-    discussion_id = ForeignKeyField(DiscussionModel, backref='discussion_labels')
-    label_id = ForeignKeyField(LabelModel, backref='discussion_labels')
+    discussion_id = ForeignKeyField(DiscussionModel, backref='discussion_labels',on_delete='CASCADE')
+    label_id = ForeignKeyField(LabelModel, backref='discussion_labels', on_delete='CASCADE')
     
     class Meta:
         database = db
