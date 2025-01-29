@@ -23,7 +23,7 @@ from peewee import *
 from exts import db
 
 class LabelModel(Model):
-    index = IntegerField(primary_key=True)
+    id = IntegerField(primary_key=True)
     name = CharField()
     color = CharField()
     
