@@ -2,8 +2,9 @@ import json
 import os
 
 class Discussion_Label:
-    discussion_id = 0
-    label_id = 0
+    def __init__(self, discussion_id=0, label_id=0):
+        self.discussion_id = discussion_id
+        self.label_id = label_id
     
     @staticmethod
     def fromEnv():
