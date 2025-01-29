@@ -11,7 +11,6 @@ if __name__ == "__main__":
     action = os.environ.get("ACTION")
     if action == "deleted":
         num_rows = DiscussionModel.delete().where(DiscussionModel.id == discussion.id).execute()
-        num_rows += Discussion_LableModel.delete().where(Discussion_LableModel.discussion_id == discussion.id).execute()
         print(f"Delete {num_rows} rows")
     else:
         discussion_model = DiscussionModel.fromDiscussion(discussion)
