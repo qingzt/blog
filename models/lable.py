@@ -1,9 +1,10 @@
 import os
 
 class Label:
-    id = 0
-    name = ""
-    color = ""
+    def __init__(self):
+        self.id = 0
+        self.name = ""
+        self.color = ""
     
     @staticmethod
     def fromEnv():

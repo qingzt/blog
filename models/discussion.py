@@ -2,12 +2,13 @@ import os
 import json
 
 class Discussion:
-    id = 0
-    title = ""
-    created_at = ""
-    updated_at = ""
-    body = ""
-    labels = []
+    def __init__(self):
+        self.id = 0
+        self.title = ""
+        self.created_at = ""
+        self.updated_at = ""
+        self.body = ""
+        self.labels = []
     
     @staticmethod
     def fromEnv():
