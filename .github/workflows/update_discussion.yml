@@ -32,6 +32,7 @@ jobs:
           UPDATED_AT: ${{ github.event.discussion.updated_at }}
           BODY: ${{ github.event.discussion.body }}
           LABELS: ${{ toJson(github.event.discussion.labels.*.id) }}
+          ACTION: ${{ github.event.action }}
       
       - name: Push changes
         run: |
