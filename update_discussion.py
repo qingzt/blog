@@ -4,7 +4,8 @@ from exts import db
 import os
 
 if __name__ == "__main__":
-    db.create_tables([DiscussionModel, DiscussionIndex, Discussion_LableModel])
+    # db.create_tables([DiscussionModel, DiscussionIndex, Discussion_LableModel])
+    db.create_tables([DiscussionModel, Discussion_LableModel])
     discussion = Discussion.fromEnv()
     discussion_labels = Discussion_Label.fromEnv()
     print(f"discussion: {discussion}\n discussion_labels: {discussion_labels}")
@@ -25,6 +26,6 @@ if __name__ == "__main__":
         Discussion_LableModel.delete().where(Discussion_LableModel.discussion_id == discussion.id).execute()
         discussion_lables = [ {"discussion_id":discussion.id,"label_id":lable_id} for lable_id in discussion.labels ]
         Discussion_LableModel.insert_many(discussion_lables).execute()
-    DiscussionIndex.rebuild()
-    DiscussionIndex.optimize()
+    # DiscussionIndex.rebuild()
+    # DiscussionIndex.optimize()
     db.close()
