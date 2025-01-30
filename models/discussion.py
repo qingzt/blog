@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import datetime
 
 class Discussion:
     def __init__(self):
@@ -18,6 +19,8 @@ class Discussion:
                 discussion.__dict__[key] = json.loads(os.environ.get(key.upper()))
             elif key== "id":
                 discussion.__dict__[key] = int(os.environ.get("NUMBER"))
+            elif key == "created_at" or key == "updated_at":
+                discussion.__dict__[key] = datetime.strptime(os.environ.get(key.upper()), "%Y-%m-%dT%H:%M:%SZ")
             else:
                 discussion.__dict__[key] = os.environ.get(key.upper())
         return discussion
@@ -30,12 +33,13 @@ class Discussion:
     
 from peewee import *
 from exts import db
+from playhouse.sqlite_ext import FTSModel,SearchField
 
 class DiscussionModel(Model):
     id = IntegerField(primary_key=True)
-    title = CharField()
-    created_at = CharField()
-    updated_at = CharField()
+    title = TextField()
+    created_at = DateTimeField()
+    updated_at = DateTimeField()
     body = TextField()
     
     class Meta:
@@ -56,3 +60,12 @@ class DiscussionModel(Model):
                 continue
             discussion.__dict__[key] = getattr(self, key)
         return discussion
+
+class DiscussionIndex(FTSModel):
+    title = SearchField()
+    body = SearchField()
+    
+    class Meta:
+        database = db
+        table_name = 'discussion_index'
+        options = {'title': DiscussionModel.title, 'body': DiscussionModel.body}
