@@ -4,6 +4,8 @@ from models.discussion_label import Discussion_LableModel
 from models.lable import LabelModel
 from peewee import fn
 from math import ceil
+from utils.markdown import unmark
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
@@ -53,7 +55,7 @@ def get_discussion():
     }
     for discussion_model in query:
         discussion=discussion_model.toDiscussion()
-        discussion.body = discussion.body[:100]
+        discussion.body = unmark(discussion.body)[:300]
         discussion_labels = discussion_model.discussion_labels
         for label in discussion_labels:
             discussion.labels.append(label.label_id.toLabel().__dict__)
