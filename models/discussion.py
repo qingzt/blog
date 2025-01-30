@@ -68,4 +68,4 @@ class DiscussionIndex(FTSModel):
     class Meta:
         database = db
         table_name = 'discussion_index'
-        options = {'title': DiscussionModel.title, 'body': DiscussionModel.body}
+        options = {'title': DiscussionModel.title, 'body': DiscussionModel.body,'tokenize': 'porter'}
