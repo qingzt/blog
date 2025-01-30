@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from models.discussion import DiscussionModel
 from models.discussion_label import Discussion_LableModel
 from models.lable import LabelModel
-from peewee import fn
+from peewee import fn,JOIN
 from math import ceil
 from utils.flask import JsonResponse
 
@@ -34,27 +34,27 @@ def get_discussions():
     if label_id:
         query = (DiscussionModel
                  .select()
-                 .join(Discussion_LableModel)
+                 .join(Discussion_LableModel,JOIN.LEFT_OUTER)
                  .where(Discussion_LableModel.label_id == label_id)
                  .paginate(page, paginate_by))
         page_num = ceil((DiscussionModel
                  .select()
-                 .join(Discussion_LableModel)
+                 .join(Discussion_LableModel,JOIN.LEFT_OUTER)
                  .where(Discussion_LableModel.label_id == label_id)).count() / paginate_by)
     else:
         query = (DiscussionModel
                  .select()
-                 .join(Discussion_LableModel)
+                 .join(Discussion_LableModel,JOIN.LEFT_OUTER)
                  .paginate(page, paginate_by))
         page_num = ceil((DiscussionModel
                  .select()
-                 .join(Discussion_LableModel)).count() / paginate_by)
+                 .join(Discussion_LableModel,JOIN.LEFT_OUTER)).count() / paginate_by)
     resp = {
         'page_num': page_num,
         'discussions': []
     }
     for discussion_model in query:
-        discussion = discussion_model.toDiscussion()
+        discussion = discussion_model.toDiscussion(limit=True)
         resp['discussions'].append(discussion.__dict__)
     return JsonResponse.success(resp)
 
