@@ -4,7 +4,7 @@ from models.discussion_label import Discussion_LableModel
 from models.lable import LabelModel
 from peewee import fn
 from math import ceil
-from utils.markdown import unmark
+from utils.flask import JsonResponse
 
 app = Flask(__name__)
 
@@ -24,10 +24,10 @@ def get_labels():
         label = result.label_id.toLabel().__dict__
         label['discussion_count'] = result.discussion_count
         label_counts.append(label)
-    return jsonify(label_counts)
+    return JsonResponse.success(label_counts)
     
 @app.route('/discussions', methods=['GET'])
-def get_discussion():
+def get_discussions():
     page = request.args.get('page', default=1, type=int)
     paginate_by = request.args.get('paginate_by', default=10, type=int)
     label_id = request.args.get('label_id', default=None, type=int)
@@ -54,13 +54,16 @@ def get_discussion():
         'discussions': []
     }
     for discussion_model in query:
-        discussion=discussion_model.toDiscussion()
-        discussion.body = unmark(discussion.body)[:300]
-        discussion_labels = discussion_model.discussion_labels
-        for label in discussion_labels:
-            discussion.labels.append(label.label_id.toLabel().__dict__)
+        discussion = discussion_model.toDiscussion()
         resp['discussions'].append(discussion.__dict__)
-    return jsonify(resp)
+    return JsonResponse.success(resp)
+
+@app.route('/discussion/<int:discussion_id>', methods=['GET'])
+def get_discussion(discussion_id):
+    discussion_model = DiscussionModel.get(DiscussionModel.id == discussion_id)
+    discussion = discussion_model.toDiscussion()
+    return JsonResponse.success(discussion.__dict__)
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

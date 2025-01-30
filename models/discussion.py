@@ -2,6 +2,8 @@ import os
 import json
 from datetime import datetime
 
+from utils.markdown import unmark
+
 class Discussion:
     def __init__(self):
         self.id = 0
@@ -53,13 +55,20 @@ class DiscussionModel(Model):
             setattr(discussion_model, attr, getattr(discussion, attr))
         return discussion_model
     
-    def toDiscussion(self):
+    def toDiscussion(self,limit=False):
         discussion = Discussion()
         for key, _ in discussion.__dict__.items():
             if key == "labels":
                 continue
             discussion.__dict__[key] = getattr(self, key)
+        if limit:
+            discussion.body = unmark(discussion.body)[:300]
+        if hasattr(self, 'discussion_labels'):
+            discussion_labels = self.discussion_labels
+            for label in discussion_labels:
+                discussion.labels.append(label.label_id.toLabel().__dict__)
         return discussion
+        
 
 class DiscussionIndex(FTSModel):
     title = SearchField()
