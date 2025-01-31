@@ -1,3 +1,4 @@
+setuptools wheel
 flask
 peewee
 markdown
