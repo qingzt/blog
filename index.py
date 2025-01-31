@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from models.article import ArticleModel
+from models.article import ArticleModel, ArticleIndex
 from models.article_label import Article_LableModel
 from models.lable import LabelModel
 from peewee import fn,JOIN
@@ -7,6 +7,7 @@ from math import ceil
 from utils.flask import JsonResponse
 
 app = Flask(__name__)
+app.json.ensure_ascii = False
 
 @app.route('/', methods=['GET'])
 def hello():
@@ -45,11 +46,9 @@ def get_articles():
     else:
         query = (ArticleModel
                  .select()
-                 .join(Article_LableModel,JOIN.LEFT_OUTER)
                  .paginate(page, paginate_by))
         page_num = ceil((ArticleModel
-                 .select()
-                 .join(Article_LableModel,JOIN.LEFT_OUTER)).count() / paginate_by)
+                 .select()).count() / paginate_by)
         label = None
     resp = {
         'page_num': page_num,
@@ -67,6 +66,24 @@ def get_article(article_id):
     article = article_model.toArticle()
     return JsonResponse.success(article.__dict__)
 
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query')
+    page = request.args.get('page', default=1, type=int)
+    paginate_by = request.args.get('paginate_by', default=10, type=int)
+    docs = ArticleIndex.search(query)
+    query = []
+    for doc in docs:
+        query.append(ArticleModel.get(ArticleModel.id == doc.rowid))
+    page_num = ceil(len(docs) / paginate_by)
+    resp = {
+        'page_num': page_num,
+        'articles': []
+    }
+    for article_model in query:
+        article = article_model.toArticle(limit=True)
+        resp['articles'].append(article.__dict__)
+    return JsonResponse.success(resp)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -7,16 +7,16 @@ if __name__ == "__main__":
     db.create_tables([ArticleModel, ArticleIndex, Article_LableModel])
     db.execute_sql("CREATE TRIGGER IF NOT EXISTS articles_after_insert AFTER INSERT ON articles \
         BEGIN \
-            INSERT INTO article_index(docid, title, body) \
-            VALUES (NEW.id, NEW.title, NEW.body); \
-        END;")
-    db.execute_sql("CREATE TRIGGER IF NOT EXISTS articles_after_update AFTER UPDATE ON articles \
-        BEGIN \
-            UPDATE article_index SET title=NEW.title, body=NEW.body WHERE docid=NEW.id; \
+            INSERT INTO article_index(rowid, title, body) VALUES (NEW.id, NEW.title, NEW.body); \
         END;")
     db.execute_sql("CREATE TRIGGER IF NOT EXISTS articles_after_delete AFTER DELETE ON articles \
         BEGIN \
-            DELETE FROM article_index WHERE docid=OLD.id; \
+            INSERT INTO article_index(article_index, rowid, title, body) VALUES('delete', OLD.id, OLD.title, OLD.body); \
+        END;")
+    db.execute_sql("CREATE TRIGGER IF NOT EXISTS articles_after_update AFTER UPDATE ON articles \
+        BEGIN \
+            INSERT INTO article_index(article_index, rowid, title, body) VALUES('delete', OLD.id, OLD.title, OLD.body); \
+            INSERT INTO article_index(rowid, title, body) VALUES (NEW.id, NEW.title, NEW.body); \
         END;")
     article = Article.fromEnv()
     article_labels = Article_Label.fromEnv()

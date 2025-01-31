@@ -41,7 +41,7 @@ class Article:
     
 from peewee import *
 from exts import db
-from playhouse.sqlite_ext import FTSModel,SearchField
+from playhouse.sqlite_ext import FTS5Model,SearchField
 
 class ArticleModel(Model):
     id = IntegerField(primary_key=True)
@@ -68,7 +68,7 @@ class ArticleModel(Model):
                 continue
             article.__dict__[key] = getattr(self, key)
         if limit:
-            article.body = unmark(article.body)[:300]
+            article.body = unmark(article.body)[:300].replace("\n", " ")
         if hasattr(self, 'article_labels'):
             article_labels = self.article_labels
             for label in article_labels:
@@ -76,11 +76,15 @@ class ArticleModel(Model):
         return article
         
 
-class ArticleIndex(FTSModel):
+class ArticleIndex(FTS5Model):
     title = SearchField()
     body = SearchField()
     
     class Meta:
         database = db
         table_name = 'article_index'
-        options = {'content': ArticleModel, 'tokenize': 'porter'}
+        options = {
+            'content': ArticleModel,
+            'content_rowid': ArticleModel.id,
+            'tokenize': 'simple'
+        }
