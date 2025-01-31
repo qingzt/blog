@@ -4,8 +4,8 @@ from exts import db
 import os
 
 if __name__ == "__main__":
-    # db.create_tables([DiscussionModel, DiscussionIndex, Discussion_LableModel])
-    db.create_tables([DiscussionModel, Discussion_LableModel])
+    db.create_tables([DiscussionModel, DiscussionIndex, Discussion_LableModel])
+    # db.create_tables([DiscussionModel, Discussion_LableModel])
     discussion = Discussion.fromEnv()
     discussion_labels = Discussion_Label.fromEnv()
     print(f"discussion: {discussion}\n discussion_labels: {discussion_labels}")
