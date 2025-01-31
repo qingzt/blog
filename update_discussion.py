@@ -17,7 +17,7 @@ if __name__ == "__main__":
         discussion_lables = [ {"discussion_id":discussion.id,"label_id":lable_id} for lable_id in discussion.labels ]
         Discussion_LableModel.insert_many(discussion_lables).execute()
     elif action == "edited":
-        DiscussionModel.set_by_id(discussion.id, **discussion.__dict__)
+        DiscussionModel.set_by_id(discussion.id, discussion.__dict__)
     elif action == "labeled":
         Discussion_LableModel.delete().where(Discussion_LableModel.discussion_id == discussion.id).execute()
         discussion_lables = [ {"discussion_id":discussion.id,"label_id":lable_id} for lable_id in discussion.labels ]
