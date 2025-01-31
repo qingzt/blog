@@ -41,6 +41,7 @@ def get_articles():
                  .select()
                  .join(Article_LableModel,JOIN.LEFT_OUTER)
                  .where(Article_LableModel.label_id == label_id)).count() / paginate_by)
+        label = LabelModel.get(LabelModel.id == label_id).toLabel().__dict__
     else:
         query = (ArticleModel
                  .select()
@@ -49,9 +50,11 @@ def get_articles():
         page_num = ceil((ArticleModel
                  .select()
                  .join(Article_LableModel,JOIN.LEFT_OUTER)).count() / paginate_by)
+        label = None
     resp = {
         'page_num': page_num,
-        'articles': []
+        'articles': [],
+        'label': label
     }
     for article_model in query:
         article = article_model.toArticle(limit=True)

@@ -2,7 +2,7 @@ import os
 import json
 from datetime import datetime
 
-from utils.markdown import unmark
+from utils.markdown import convert_to_plain_text as unmark
 
 class Article:
     def __init__(self):
