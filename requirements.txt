@@ -1,3 +1,4 @@
 flask
 peewee
 markdown
+pysqlite3
