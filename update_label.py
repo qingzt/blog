@@ -12,6 +12,6 @@ if __name__ == "__main__":
     elif action == "created":
         LabelModel.create(**label.__dict__)
     else: # edited
-        LabelModel.set_by_id(label.id, **label.__dict__)
+        LabelModel.set_by_id(label.id, label.__dict__)
     db.close()
     
