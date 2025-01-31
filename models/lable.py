@@ -19,6 +19,11 @@ class Label:
             s += f"{key}: {value}\n"
         return s
     
+    def getSetDict(self):
+        dict=self.__dict__
+        dict.pop("id")
+        return dict
+    
 from peewee import *
 from exts import db
 
