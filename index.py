@@ -37,19 +37,15 @@ def get_articles():
                  .select()
                  .join(Article_LableModel,JOIN.LEFT_OUTER)
                  .where(Article_LableModel.label_id == label_id)
-                 .paginate(page, paginate_by))
-        page_num = ceil((ArticleModel
-                 .select()
-                 .join(Article_LableModel,JOIN.LEFT_OUTER)
-                 .where(Article_LableModel.label_id == label_id)).count() / paginate_by)
+                 .order_by(ArticleModel.updated_at.desc()))
         label = LabelModel.get(LabelModel.id == label_id).toLabel().__dict__
     else:
         query = (ArticleModel
                  .select()
-                 .paginate(page, paginate_by))
-        page_num = ceil((ArticleModel
-                 .select()).count() / paginate_by)
+                 .order_by(ArticleModel.updated_at.desc()))
         label = None
+    page_num = ceil(query.count() / paginate_by)
+    query = query.paginate(page, paginate_by)
     resp = {
         'page_num': page_num,
         'articles': [],
@@ -71,17 +67,13 @@ def search():
     query = request.args.get('query')
     page = request.args.get('page', default=1, type=int)
     paginate_by = request.args.get('paginate_by', default=10, type=int)
-    docs = ArticleIndex.search(query)
-    query = []
-    for doc in docs:
-        query.append(ArticleModel.get(ArticleModel.id == doc.rowid))
-    page_num = ceil(len(docs) / paginate_by)
+    docs = ArticleIndex.search(query).paginate(page, paginate_by)
     resp = {
-        'page_num': page_num,
+        'page_num': ceil(docs.count() / paginate_by),
         'articles': []
     }
-    for article_model in query:
-        article = article_model.toArticle(limit=True)
+    for doc in docs:
+        article = ArticleModel.get(ArticleModel.id == doc.rowid).toArticle(limit=True)
         resp['articles'].append(article.__dict__)
     return JsonResponse.success(resp)
 
