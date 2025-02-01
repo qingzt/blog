@@ -1,9 +1,13 @@
-name: Update Label
+name: Update Database 
+
 on:
+  discussion:
+    types: [created, edited, deleted, labeled, unlabeled]
   label:
     types: [created, edited, deleted]
+
 jobs:
-  update_label:
+  update_database:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -24,13 +28,26 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
+    
       - name: Update Label Database
+        if: github.event_name == 'label'
         run: python update_label.py
         env:
           ID: ${{ github.event.label.id }}
           NAME: ${{ github.event.label.name }}
           COLOR: ${{ github.event.label.color }}
+          ACTION: ${{ github.event.action }}
+          
+      - name: Update Discussion Database
+        if: github.event_name == 'discussion'
+        run: python update_discussion.py
+        env:
+          NUMBER: ${{ github.event.discussion.number }}
+          TITLE: ${{ github.event.discussion.title }}
+          CREATED_AT: ${{ github.event.discussion.created_at }}
+          UPDATED_AT: ${{ github.event.discussion.updated_at }}
+          BODY: ${{ github.event.discussion.body }}
+          LABELS: ${{ toJson(github.event.discussion.labels.*.id) }}
           ACTION: ${{ github.event.action }}
 
       - name: Push changes
@@ -38,5 +55,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Update database"
+          git commit -m "Update Database by $github.event_name $github.event.action"
           git push
