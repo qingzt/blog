@@ -55,5 +55,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Update Database by $github.event_name $github.event.action"
+          git commit -m "Update Database by $EVENT_NAME $EVENT_ACTION"
           git push
+        env: 
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
