@@ -6,6 +6,9 @@ on:
   label:
     types: [created, edited, deleted]
 
+concurrency:
+  group: update_database
+
 jobs:
   update_database:
     runs-on: ubuntu-latest
