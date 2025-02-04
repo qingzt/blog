@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+        {
+            "src": "/api/(.*)",
+            "dest": "https://blog-api.qingzt.us.kg/$1"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
