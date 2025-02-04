@@ -17,7 +17,7 @@ function Layout (props: ParentProps) {
     const location = useLocation()
     const navigate = useNavigate();
     const [state,setState] = useAppContext()
-    var searchContent = "";
+    // var searchContent = "";
     return (
         <>
         {/* 路由切换时显示加载进度条 */}
