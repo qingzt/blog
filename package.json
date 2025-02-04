@@ -1,0 +1,31 @@
+{
+  "name": "blog",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@solidjs/meta": "^0.29.4",
+    "@solidjs/router": "^0.15.3",
+    "@types/markdown-it": "^14.1.2",
+    "@types/string": "^0.0.34",
+    "dayjs": "^1.11.13",
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^9.2.0",
+    "markdown-it-prism": "^2.3.0",
+    "markdown-it-toc-done-right": "^4.2.0",
+    "sober": "^1.0.6",
+    "solid-js": "^1.9.3",
+    "string": "^3.3.3"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.2",
+    "vite": "^6.0.5",
+    "vite-plugin-solid": "^2.11.0"
+  }
+}
