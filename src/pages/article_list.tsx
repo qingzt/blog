@@ -15,29 +15,38 @@ function ArticleList() {
   const [pageNum, setPageNum] = createSignal(0);
   const location = useLocation();
   const navigate = useNavigate();
-  const searchParams = new URLSearchParams(location.search);
-  const page = Number(searchParams.get("page")) || 1;
-  const [label, setLabel] = createSignal<Label | null>();
+  const [about, setAbout] = createSignal("");
+  let searchParams = new URLSearchParams(location.search);
+  var page = 1;
   const [state,setState] = useAppContext();
   onMount(() => {
     state.drawerRef?.close("end");
   });
   createEffect(async () => {
+    searchParams = new URLSearchParams(location.search);
+    page = Number(searchParams.get("page")) || 1;
     setState("loading",true);
+    var aboutStr = "";
+    if(searchParams.has("search")){
+      aboutStr += searchParams.get("search")!;
+    }
     var resp:Response = await (await fetch("/api/articles"+location.search)).json();
     if (resp.code === 0) {
       var data : ArticleListData = resp.data;
-      setLabel(data.label);
       setPageNum(data.page_num);
       setArticles(reconcile(data.articles));
+      if(data.label!=null){
+        aboutStr = aboutStr+"+"+data.label.name;
+      }
     }
+    setAbout(aboutStr);
     setState("loading",false);
   });
   return (
     <s-scroll-view style={{height:"100%",width:"100%",display:"flex","flex-direction":"column","align-items":"center","justify-content":"start","gap":"30px","padding-top":"10px","box-sizing":"border-box"}} >
       <Title>Qingzt's Blog</Title>
-      <Show when={label()}>
-        <h1>关于"{label()?.name}"的结果</h1>
+      <Show when={about()!=""}>
+        <h1>关于"{about()}"的结果</h1>
       </Show>
       <For each={articles}>
         {(article: Article) => (

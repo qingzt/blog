@@ -17,6 +17,7 @@ function Layout (props: ParentProps) {
     const location = useLocation()
     const navigate = useNavigate();
     const [state,setState] = useAppContext()
+    var searchContent = "";
     return (
         <>
         {/* 路由切换时显示加载进度条 */}
@@ -51,9 +52,9 @@ function Layout (props: ParentProps) {
                         </svg>
                     </div>
                 <div slot="headline"> Qingzt's Blog </div>
-                <s-search slot='search' placeholder="搜索关键字">
+                <s-search slot='search' placeholder="搜索关键字" onchange={(e) => {searchContent=((e.target as HTMLInputElement).value)}}>
                     <s-icon name="search" slot="start"></s-icon>
-                    <s-icon-button slot="end">
+                    <s-icon-button slot="end" onclick={() => {navigate("/articles?search=" + searchContent)}}>
                         <s-icon name="arrow_forward"></s-icon>
                     </s-icon-button>
                 </s-search>
