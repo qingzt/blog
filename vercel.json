@@ -1,8 +1,8 @@
 {
     "rewrites": [
         {
-            "src": "/api/(.*)",
-            "dest": "https://blog-api.qingzt.us.kg/$1"
+            "source": "/api/(.*)",
+            "destination": "https://blog-api.qingzt.us.kg/$1"
         },
         {
             "source": "/(.*)",
