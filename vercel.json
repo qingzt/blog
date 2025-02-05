@@ -5,6 +5,10 @@
             "destination": "https://blog-api.qingzt.us.kg/$1"
         },
         {
+            "source": "/bing-images",
+            "destination": "https://www.bing.com/hp/api/model?mkt=zh-CN"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }

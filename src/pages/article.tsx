@@ -1,6 +1,6 @@
-import { useParams } from "@solidjs/router";
-import { onCleanup, onMount } from "solid-js";
-import { Article } from "../types";
+import { useNavigate, useParams } from "@solidjs/router";
+import { For, onCleanup, onMount, Show } from "solid-js";
+import { Article, Label } from "../types";
 import { createStore, reconcile } from "solid-js/store";
 import { Title } from "@solidjs/meta";
 import MarkdownIt from "markdown-it";
@@ -16,11 +16,13 @@ import "prismjs/components/prism-dart"
 import { useAppContext } from "../app_context";
 import string  from "string";
 import 'sober/FAB'
+import dayjs from "dayjs";
 
 function ArticlePage() {
     const id = useParams().id;
     const [article, setArticle] = createStore({} as Article);
     const [state,setState] = useAppContext();
+    const navigate = useNavigate();
     const md = MarkdownIt({
         html: false,
         linkify: true,
@@ -61,8 +63,8 @@ function ArticlePage() {
     });
 
     onCleanup(() => {
-        setState("toc","");
         state.drawerRef?.close("end");
+        setState("toc","");
     });
 
     return (
@@ -73,8 +75,48 @@ function ArticlePage() {
                 </svg>
             </s-fab>
         <s-scroll-view style={{height:"100%",width:"100%",display:"flex","flex-direction":"column","align-items":"center","justify-content":"start"}}>
-            <div style={{width:"100%",padding:"20px","box-sizing":"border-box"}}>
+            <div style={{width:"100%",padding:"15px","box-sizing":"border-box"}}>
             <Title>{article.title}</Title>
+            <div slot="subhead" style={{"gap":"8px","display":"flex","flex-direction":"row","overflow-x":"auto","align-items":"center","white-space":"nowrap"}}>
+                <small
+                    style={{
+                        "border-radius": "4px",
+                        "background-color": "var(--s-color-primary-container)",
+                        padding: "4px 6px",
+                        color: "var(--s-color-primary)",
+                    }}>
+                发布于 {dayjs(article.created_at).format("YY-MM-DD HH:mm")}
+                </small>
+                <Show when={article.updated_at !== article.created_at}>
+                <small
+                    style={{
+                    "border-radius": "4px",
+                    "background-color": "var(--s-color-secondary-container)",
+                    padding: "4px 6px",
+                    color: "var(--s-color-secondary)",
+                    }}
+                >
+                    更新于 {dayjs(article.updated_at).format("YY-MM-DD HH:mm")}
+                </small>
+                </Show>
+                <For each={article.labels}>
+                {(label: Label) => (
+                    <s-button
+                    onclick={(event)=>{event.stopPropagation();navigate("/articles?label_id="+label.id)}}
+                    style={{
+                        "background-color": `#${label.color}`,
+                        color: "white",
+                        "border-radius": "12px",
+                        padding: "4px 10px",
+                        height: "15px",
+                        "box-sizing":"content-box",
+                    }}
+                    >
+                    {label.name}
+                    </s-button>
+                )}
+                </For>
+            </div>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.css" integrity="sha512-Hasfm7Iv5AG2/v5DSRXetpC33VjyPBXn5giooMag2EgSbiJ2Xp4GGvYGKSvc68SiJIflF/WrbDFdNmtlZHE5HA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
             <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.css" rel="stylesheet" />
             <style>
@@ -92,7 +134,7 @@ function ArticlePage() {
 
                 @media (max-width: 767px) {
                     .markdown-body {
-                        padding: 25px;
+                        padding: 15px;
                     }
                 }
                     #toc .cataloglistClass {

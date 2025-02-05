@@ -10,6 +10,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      "/bing-images": {
+        target: "https://www.bing.com/hp/api/model?mkt=zh-CN",
+        changeOrigin: true,
+      }
     },
   },
 })
