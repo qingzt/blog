@@ -23,7 +23,7 @@ def get_labels():
     label_counts = []
     for result in query:
         label = result.label_id.toLabel().__dict__
-        label['article_count'] = result.article_count
+        label['count'] = result.article_count
         label_counts.append(label)
     return JsonResponse.success(label_counts)
     
