@@ -25,7 +25,7 @@ function Layout (props: ParentProps) {
             <s-linear-progress indeterminate={true} style={{position:"absolute","z-index":1,width:"100%"}}></s-linear-progress>
         </Show>
 
-        <s-drawer style={{height:"100vh",width:"100vw"}} ref={el => ( setState("drawerRef",el as Drawer))}>
+        <s-drawer style={{height:"100dvh",width:"100vw"}} ref={el => ( setState("drawerRef",el as Drawer))}>
         {/* 侧边导航 */}
             <s-navigation slot='start' mode="rail" style={{"border-right":"1px solid #e0e0e0", "width":"80px"}}>
                 <s-navigation-item selected={location.pathname == "/"} onclick={() => {navigate("/")}}>
