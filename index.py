@@ -40,14 +40,14 @@ def get_articles():
                     .join(Article_LableModel, JOIN.LEFT_OUTER)
                     .join(ArticleIndex,on=(ArticleModel.id==ArticleIndex.rowid))
                     .where(Article_LableModel.label_id == label_id)
-                    .where(ArticleIndex.match(search))
+                    .where(ArticleIndex.match(f'"{search}"'))
                     .order_by(ArticleIndex.bm25()))
             label = LabelModel.get(LabelModel.id == label_id).toLabel().__dict__
         else:
             query = (ArticleModel
                     .select()
                     .join(ArticleIndex,on=(ArticleModel.id==ArticleIndex.rowid))
-                    .where(ArticleIndex.match(search))
+                    .where(ArticleIndex.match(f'"{search}"'))
                     .order_by(ArticleIndex.bm25()))
             label = None
     else:
