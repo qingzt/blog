@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: backend
+          lfs: 'true'
         
       - name: Set up Python
         uses: actions/setup-python@v2
