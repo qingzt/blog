@@ -56,7 +56,7 @@ function Layout (props: ParentProps) {
                 </Show>
                 <s-search slot='search' placeholder="搜索关键字" onchange={(e) => {searchContent=((e.target as HTMLInputElement).value)}}>
                     <s-icon name="search" slot="start"></s-icon>
-                    <s-icon-button slot="end" onclick={() => {navigate("/articles?search=" + searchContent)}}>
+                    <s-icon-button slot="end" onclick={() => {navigate("/articles?search=" + encodeURIComponent(searchContent))}}>
                         <s-icon name="arrow_forward"></s-icon>
                     </s-icon-button>
                 </s-search>
@@ -78,7 +78,7 @@ function Layout (props: ParentProps) {
             <div style="width:100%;height:100%;overflow:auto">
                 {props.children}
             </div>
-            <Show when={state.toc!=""}>
+            <Show when={location.pathname != "/"}>
             <s-scroll-view slot="end">
                 <style>
                 {`
@@ -100,12 +100,12 @@ function Layout (props: ParentProps) {
                     /* 层级缩进效果 */
                     #toc .cataloglistClass ul {
                         margin-left: 1rem;
-                        border-left: 1px solid #eee;
+                        border-left: 1px solid var(--s-color-tertiary);
                     }
 
                     /* 链接基础样式 */
                     #toc .cataloglinkClass {
-                        color: #444;
+                        color: var(--s-color-secondary);
                         text-decoration: none;
                         display: block;
                         padding: 4px 8px;
@@ -122,7 +122,7 @@ function Layout (props: ParentProps) {
                     }
                 `}
                 </style>
-                <div style={{padding:"10px"}} innerHTML={state.toc}></div>
+                {state.toc}
             </s-scroll-view>
             </Show>
         </s-drawer>

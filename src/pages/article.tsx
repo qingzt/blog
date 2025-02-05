@@ -1,8 +1,7 @@
 import { useNavigate, useParams } from "@solidjs/router";
-import { For, onCleanup, onMount, Show } from "solid-js";
+import { createEffect, createResource, For, onCleanup, onMount, Show } from "solid-js";
 import { Article, Label } from "../types";
-import { createStore, reconcile } from "solid-js/store";
-import { Title } from "@solidjs/meta";
+import { Meta, Title } from "@solidjs/meta";
 import MarkdownIt from "markdown-it";
 import anchor from "markdown-it-anchor";
 import markdownItTocDoneRight from "markdown-it-toc-done-right";
@@ -16,11 +15,19 @@ import "prismjs/components/prism-dart"
 import { useAppContext } from "../app_context";
 import 'sober/FAB'
 import dayjs from "dayjs";
-import slugify from "slugify";
+import Giscus from "@giscus/solid";
+
+function TabelOfContents(props: {toc: string}) {
+    return (
+        <>
+        <h2 style={{color:"var(--s-color-secondary)",padding:"4px 15px"}}>目录</h2>
+        <div innerHTML={props.toc}></div>
+        </>
+    )
+}
 
 function ArticlePage() {
     const id = useParams().id;
-    const [article, setArticle] = createStore({} as Article);
     const [state,setState] = useAppContext();
     const navigate = useNavigate();
     const md = MarkdownIt({
@@ -35,12 +42,12 @@ function ArticlePage() {
         permalinkBefore: true,
         permalink: anchor.permalink.ariaHidden({symbol: "§",placement: 'before'}),
         slugify:function (s: string) {
-            return slugify(s,{lower:true});
+            return s.replace(/[^a-zA-Z0-9_\u3400-\u9FBF\s-]/g,'').replace(/\s+/g,'').toLowerCase();
         },
     });
     md.use(markdownItTocDoneRight,{
         slugify: function (s: string) {
-            return slugify(s,{lower:true});
+            return s.replace(/[^a-zA-Z0-9_\u3400-\u9FBF\s-]/g,'').replace(/\s+/g,'').toLowerCase();
         },
         containerClass: 'toc',//生成的容器的类名，这样最后返回来的字符串是 <nav class="toc"><nav/>
         containerId: 'toc',//生成的容器的ID，这样最后返回来的字符串是 <nav id="toc"><nav/>
@@ -48,22 +55,28 @@ function ArticlePage() {
         listClass: 'cataloglistClass',//li标签的样式名
         linkClass: 'cataloglinkClass',//a标签的样式名
         callback: function (html: string) {
-            setState("toc",html);
+            setState("toc",TabelOfContents({toc:html}));
         }
+    });
+
+    const [article] = createResource(id, async (id: string) => {
+        const resp = await fetch("/api/article/" + id);
+        const respjson = await resp.json();
+        return respjson.data as Article;
     });
 
     onMount(async () => {
         if(window.innerWidth > 1024){
             state.drawerRef?.show("end");
         }
-        setState("loading",true);
-        var resp = await (await fetch("/api/article/" + id)).json();
-        setArticle(reconcile(resp.data));
-        setState("loading",false);
+    });
+
+    createEffect(() => {
+        setState("loading", article.loading);
     });
 
     onCleanup(() => {
-        setState("toc","暂无目录或标签");
+        setState("toc",<h2 style={{color:"var(--s-color-secondary)",padding:"4px 15px"}}>暂无目录或标签</h2>);
     });
 
     return (
@@ -75,71 +88,90 @@ function ArticlePage() {
             </s-fab>
         <s-scroll-view style={{height:"100%",width:"100%",display:"flex","flex-direction":"column","align-items":"center","justify-content":"start"}}>
             <div style={{width:"100%",padding:"15px","box-sizing":"border-box"}}>
-            <Title>{article.title}</Title>
-            <div slot="subhead" style={{"gap":"8px","display":"flex","flex-direction":"row","overflow-x":"auto","align-items":"center","white-space":"nowrap"}}>
-                <small
-                    style={{
+            <Title>{article.latest?.title}</Title>
+            <Meta property="og:title" content={article.latest?.title} />
+                <div slot="subhead" style={{"gap":"8px","display":"flex","flex-direction":"row","overflow-x":"auto","align-items":"center","white-space":"nowrap"}}>
+                    <small
+                        style={{
+                            "border-radius": "4px",
+                            "background-color": "var(--s-color-primary-container)",
+                            padding: "4px 6px",
+                            color: "var(--s-color-primary)",
+                        }}>
+                    发布于 {dayjs(article?.latest?.created_at).format("YY-MM-DD HH:mm")}
+                    </small>
+                    <Show when={article.latest?.updated_at !== article.latest?.created_at}>
+                    <small
+                        style={{
                         "border-radius": "4px",
-                        "background-color": "var(--s-color-primary-container)",
+                        "background-color": "var(--s-color-secondary-container)",
                         padding: "4px 6px",
-                        color: "var(--s-color-primary)",
-                    }}>
-                发布于 {dayjs(article.created_at).format("YY-MM-DD HH:mm")}
-                </small>
-                <Show when={article.updated_at !== article.created_at}>
-                <small
-                    style={{
-                    "border-radius": "4px",
-                    "background-color": "var(--s-color-secondary-container)",
-                    padding: "4px 6px",
-                    color: "var(--s-color-secondary)",
-                    }}
-                >
-                    更新于 {dayjs(article.updated_at).format("YY-MM-DD HH:mm")}
-                </small>
-                </Show>
-                <For each={article.labels}>
-                {(label: Label) => (
-                    <s-button
-                    onclick={(event)=>{event.stopPropagation();navigate("/articles?label_id="+label.id)}}
-                    style={{
-                        "background-color": `#${label.color}`,
-                        color: "white",
-                        "border-radius": "12px",
-                        padding: "4px 10px",
-                        height: "15px",
-                        "box-sizing":"content-box",
-                    }}
+                        color: "var(--s-color-secondary)",
+                        }}
                     >
-                    {label.name}
-                    </s-button>
-                )}
-                </For>
-            </div>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.css" integrity="sha512-Hasfm7Iv5AG2/v5DSRXetpC33VjyPBXn5giooMag2EgSbiJ2Xp4GGvYGKSvc68SiJIflF/WrbDFdNmtlZHE5HA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-            <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.css" rel="stylesheet" />
-            <style>
-            {`
-                .markdown-body {
-                    box-sizing: border-box;
-                    min-width: 200px;
-                    max-width: 980px;
-                    width: 100%;
-                    margin: 0 auto;
-                    padding: 45px;
-                    background-color: var(--s-color-surface);
-                    color: var(--s-color-on-surface);
-                }
-
-                @media (max-width: 767px) {
+                        更新于 {dayjs(article.latest?.updated_at).format("YY-MM-DD HH:mm")}
+                    </small>
+                    </Show>
+                    <For each={article.latest?.labels}>
+                    {(label: Label) => (
+                        <s-button
+                        onclick={(event)=>{event.stopPropagation();navigate("/articles?label_id="+label.id)}}
+                        style={{
+                            "background-color": `#${label.color}`,
+                            color: "white",
+                            "border-radius": "12px",
+                            padding: "4px 10px",
+                            height: "15px",
+                            "box-sizing":"content-box",
+                        }}
+                        >
+                        {label.name}
+                        </s-button>
+                    )}
+                    </For>
+                </div>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.css" integrity="sha512-Hasfm7Iv5AG2/v5DSRXetpC33VjyPBXn5giooMag2EgSbiJ2Xp4GGvYGKSvc68SiJIflF/WrbDFdNmtlZHE5HA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+                <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.css" rel="stylesheet" />
+                <style>
+                {`
                     .markdown-body {
-                        padding: 15px;
+                        box-sizing: border-box;
+                        min-width: 200px;
+                        max-width: 980px;
+                        width: 100%;
+                        margin: 0 auto;
+                        padding: 45px;
+                        background-color: var(--s-color-surface);
+                        color: var(--s-color-on-surface);
                     }
-                }
-            `}
-            </style>
-            <article class="markdown-body" style={{"user-select": "text"}} innerHTML={"<h1>"+article.title+"</h1>"+md.render(article.body||'')}></article>
+
+                    @media (max-width: 767px) {
+                        .markdown-body {
+                            padding: 15px;
+                        }
+                    }
+                `}
+                </style>
+                <article class="markdown-body" style={{"user-select": "text"}} innerHTML={"<h1>"+(article.latest?.title||"")+"</h1>"+md.render(article.latest?.body||'')}></article>
             </div>
+            <Show when={article.latest}>
+                    <div style={{width:"100%","min-width":"200px","max-width":"980px",padding:"15px","box-sizing":"border-box",display:"flex","flex-direction":"column","align-items":"center","justify-content":"start"}}>
+                        <Giscus
+                            id="comments"
+                            repo="qingzt/blog"
+                            repoId="R_kgDONw2X4A"
+                            category="Announcements"
+                            categoryId="DIC_kwDONw2X4M4Cmce1"
+                            mapping="og:title"
+                            reactionsEnabled="1"
+                            emitMetadata="0"
+                            inputPosition="top"
+                            theme="light"
+                            lang="en"
+                            loading="lazy"
+                        />
+                    </div>
+            </Show>
         </s-scroll-view>
         </div>
     );

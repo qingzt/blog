@@ -1,9 +1,9 @@
-import { createContext,  ParentComponent, useContext } from "solid-js";
+import { createContext,  JSX,  ParentComponent, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Drawer } from 'sober/drawer'
 const appState = {
     loading: false,
-    toc: "暂无目录或标签",
+    toc: <h2 style={{color:"var(--s-color-secondary)",padding:"4px 15px"}}>暂无目录或标签</h2> as JSX.Element,
     drawerRef : null as Drawer | null,
 }
 type AppStateT = typeof appState;

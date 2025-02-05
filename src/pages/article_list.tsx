@@ -9,6 +9,25 @@ import { Article, ArticleListData, Label, Response } from "../types";
 import { useAppContext } from "../app_context";
 import { Title } from "@solidjs/meta";
 
+function Labels(props: {labels: Label[]}) {
+    return (
+        <>
+        <h2 style={{color:"var(--s-color-secondary)",padding:"4px 15px"}}>所有标签</h2>
+        <nav id="toc" class="toc">
+            <ul class="cataloglistClass">
+                <For each={props.labels}>
+                    {(label: Label) => (
+                        <li>
+                            <a class="cataloglinkClass" href={"/articles?label_id="+label.id}>{label.name}({label.count})</a>
+                        </li>
+                    )}
+                </For>
+            </ul>
+        </nav>
+        </>
+    )
+}
+
 function ArticleList() {
   const [state,setState] = useAppContext();
   const [searchParams,setSearchParams] = useSearchParams();
@@ -41,12 +60,7 @@ function ArticleList() {
   onMount(async ()=>{
     const resp = await(await fetch("/api/labels")).json() as Response;
     const labels = resp.data as Label[];
-    var labelStr = "";
-    for (const label of labels) {
-      labelStr += "<li><a class=\"cataloglinkClass\" href=\"/articles?label_id="+label.id+"\">"+label.name+"("+label.count+")"+"</a></li>"
-    }
-    labelStr = "<nav id=\"toc\" class=\"toc\"><ul class=\"cataloglistClass\">"+labelStr+"</ul></nav>";
-    setState("toc",labelStr);
+    setState("toc",<Labels labels={labels}></Labels>);
   })
 
   createEffect(()=>{
