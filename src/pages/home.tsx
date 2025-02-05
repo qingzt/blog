@@ -10,7 +10,7 @@ import { Title } from '@solidjs/meta'
 import { createResource } from 'solid-js'
 
 function Home () {
-    const [backgroundUrl] = createResource(async () => {
+    const [backgroundUrl] = createResource<string>(async () => {
         const resp = await fetch('/bing-images')
         const data = await resp.json()
         return data["MediaContents"][0]["ImageContent"]["Image"]["Url"]
@@ -18,7 +18,7 @@ function Home () {
     return (
         <div style={{position:"relative", display: 'flex', "flex-direction": 'column', "align-items": 'center', "justify-content": 'center', height: '100%', width: '100%', "z-index": '0', color: 'white'}}>
             <Title>Qingzt's Home</Title>
-            <img src={backgroundUrl()} style={{position:'absolute', width:"100%", height:"100%", "filter": 'blur(3px)',"object-fit":"cover","z-index":"-1"}} />
+            <img src={backgroundUrl.latest?.startsWith("http")?backgroundUrl.latest:"https://s.cn.bing.net"+backgroundUrl.latest} style={{position:'absolute', width:"100%", height:"100%", "filter": 'blur(3px)',"object-fit":"cover","z-index":"-1"}} />
             <div style={{position:'absolute', width:"100%", height:"100%", "background-color": 'rgba(0, 0, 0, 0.3)', "z-index":"-1"}} />
             <h1>
                 Welcome to Qingzt's Blog
