@@ -14,6 +14,7 @@ export interface Label {
     id: string;
     name: string;
     color: string;
+    count: number;
 }
 
 export interface Article {

@@ -5,7 +5,7 @@ import { Router,Route } from "@solidjs/router";
 import 'sober/page'
 import Home from './pages/home.tsx'
 import ArticleList from './pages/article_list.tsx';
-import Layout from './components/layout.tsx';
+import Layout from './layout.tsx';
 import Article from './pages/article.tsx';
 import { AppContextProvider } from './app_context.tsx';
 

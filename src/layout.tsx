@@ -11,7 +11,7 @@ import 'sober/linear-progress'
 import 'sober/search'
 import { ParentProps, Show} from 'solid-js'
 import { useLocation, useNavigate } from '@solidjs/router'
-import { useAppContext } from '../app_context'
+import { useAppContext } from './app_context'
 
 function Layout (props: ParentProps) {
     const location = useLocation()
@@ -80,6 +80,48 @@ function Layout (props: ParentProps) {
             </div>
             <Show when={state.toc!=""}>
             <s-scroll-view slot="end">
+                <style>
+                {`
+                    #toc .cataloglistClass {
+                        list-style: none;
+                        margin: 0;
+                        padding: 0;
+                        line-height: 1.6;
+                    }
+
+                    /* 目录项样式 */
+                    #toc .cataloglistClass li {
+                        margin: 6px 0;
+                        padding-left: 1rem;
+                        position: relative;
+                        transition: all 0.2s ease;
+                    }
+
+                    /* 层级缩进效果 */
+                    #toc .cataloglistClass ul {
+                        margin-left: 1rem;
+                        border-left: 1px solid #eee;
+                    }
+
+                    /* 链接基础样式 */
+                    #toc .cataloglinkClass {
+                        color: #444;
+                        text-decoration: none;
+                        display: block;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        transition: all 0.2s ease;
+                        font-size: 0.95em;
+                    }
+
+                    /* 悬停效果 */
+                    #toc .cataloglinkClass:hover {
+                        background: var(--s-color-secondary-container);
+                        color: var(--s-color-secondary);
+                        transform: translateX(4px);
+                    }
+                `}
+                </style>
                 <div style={{padding:"10px"}} innerHTML={state.toc}></div>
             </s-scroll-view>
             </Show>

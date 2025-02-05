@@ -14,9 +14,9 @@ import "prismjs/components/prism-typescript"
 import "prismjs/components/prism-python"
 import "prismjs/components/prism-dart"
 import { useAppContext } from "../app_context";
-import string  from "string";
 import 'sober/FAB'
 import dayjs from "dayjs";
+import slugify from "slugify";
 
 function ArticlePage() {
     const id = useParams().id;
@@ -35,12 +35,12 @@ function ArticlePage() {
         permalinkBefore: true,
         permalink: anchor.permalink.ariaHidden({symbol: "§",placement: 'before'}),
         slugify:function (s: string) {
-            return string(s).slugify().toString();
+            return slugify(s,{lower:true});
         },
     });
     md.use(markdownItTocDoneRight,{
         slugify: function (s: string) {
-            return string(s).slugify().toString();
+            return slugify(s,{lower:true});
         },
         containerClass: 'toc',//生成的容器的类名，这样最后返回来的字符串是 <nav class="toc"><nav/>
         containerId: 'toc',//生成的容器的ID，这样最后返回来的字符串是 <nav id="toc"><nav/>
@@ -63,8 +63,7 @@ function ArticlePage() {
     });
 
     onCleanup(() => {
-        state.drawerRef?.close("end");
-        setState("toc","");
+        setState("toc","暂无目录或标签");
     });
 
     return (
@@ -137,44 +136,6 @@ function ArticlePage() {
                         padding: 15px;
                     }
                 }
-                    #toc .cataloglistClass {
-                        list-style: none;
-                        margin: 0;
-                        padding: 0;
-                        line-height: 1.6;
-                    }
-
-                    /* 目录项样式 */
-                    #toc .cataloglistClass li {
-                        margin: 6px 0;
-                        padding-left: 1rem;
-                        position: relative;
-                        transition: all 0.2s ease;
-                    }
-
-                    /* 层级缩进效果 */
-                    #toc .cataloglistClass ul {
-                        margin-left: 1rem;
-                        border-left: 1px solid #eee;
-                    }
-
-                    /* 链接基础样式 */
-                    #toc .cataloglinkClass {
-                        color: #444;
-                        text-decoration: none;
-                        display: block;
-                        padding: 4px 8px;
-                        border-radius: 4px;
-                        transition: all 0.2s ease;
-                        font-size: 0.95em;
-                    }
-
-                    /* 悬停效果 */
-                    #toc .cataloglinkClass:hover {
-                        background: var(--s-color-secondary-container);
-                        color: var(--s-color-secondary);
-                        transform: translateX(4px);
-                    }
             `}
             </style>
             <article class="markdown-body" style={{"user-select": "text"}} innerHTML={"<h1>"+article.title+"</h1>"+md.render(article.body||'')}></article>
