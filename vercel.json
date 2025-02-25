@@ -2,7 +2,7 @@
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "https://blog-api.qingzt.us.kg/$1"
+            "destination": "https://blogbackend-delta.vercel.app/$1"
         },
         {
             "source": "/bing-images",
