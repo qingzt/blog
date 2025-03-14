@@ -5,10 +5,8 @@ export function onRequest(context) {
 
     // Construct new URL
     const url = new URL(request.url);
-
-    const new_path_name = url.pathname.replace('/api', '');
-
-    const newUrl = targetUrl + new_path_name + url.search;
+    
+    const newUrl = targetUrl + url.pathname + url.search;
 
     // Clone headers
     const newHeaders = new Headers(request.headers);
