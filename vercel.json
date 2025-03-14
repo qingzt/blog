@@ -6,12 +6,6 @@
         "use": "@vercel/python"
       }
     ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/"
-      }
-    ],
     "headers":[
         {
             "source": "/(.*)",
@@ -20,7 +14,7 @@
                     "key": "Cache-Control",
                     "value": "max-age=0， s-maxage=31536000"
                 }
-            ]   
+            ]
         }
     ]
 }
