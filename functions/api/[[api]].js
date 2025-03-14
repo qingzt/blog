@@ -18,10 +18,10 @@ export function onRequest(context) {
 
     // Create new request
     const newRequest = new Request(newUrl, {
-    method: request.method,
-    headers: newHeaders,
-    body: body,
-    redirect: 'follow'
+        method: request.method,
+        headers: newHeaders,
+        body: body,
+        redirect: 'follow'
     });
 
     // Send request to target server
