@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+
+// 获取最近更新的文章
+const posts = await getCollection('posts');
+const recentPosts = posts
+  .sort((a, b) => (b.data.updatedAt || b.data.createdAt).getTime() - (a.data.updatedAt || a.data.createdAt).getTime())
+  .slice(0, 6);
+---
+
+<aside class="fixed left-0 top-0 bottom-0 w-80 bg-gray-100 overflow-y-auto">
+  <div class="p-8 space-y-6">
+    <!-- 头像和介绍 -->
+    <div class="text-center">
+      <div class="flex justify-center mb-4">
+        <img 
+          src="/avatar.svg" 
+          alt="Achuan-2" 
+          class="w-20 h-20 rounded-full border-4 border-white shadow-lg"
+        />
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">Achuan-2</h1>
+      <p class="text-sm text-gray-600">一条没有故事的🐟</p>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="my-6">
+      <a href="/search" class="flex items-center gap-2 w-full px-4 py-2 bg-white rounded-full border border-gray-200 hover:border-gray-300 transition-colors">
+        <span class="i-carbon-search text-gray-400"></span>
+        <span class="text-gray-500">站内搜索</span>
+      </a>
+    </div>
+
+    <!-- 导航菜单 -->
+    <nav class="flex flex-col space-y-1">
+      <a href="/" class="px-4 py-2 text-gray-700 hover:bg-white hover:text-gray-900 rounded-lg transition-colors font-medium">
+        博客
+      </a>
+      <a href="/links" class="px-4 py-2 text-gray-700 hover:bg-white hover:text-gray-900 rounded-lg transition-colors font-medium">
+        友链
+      </a>
+      <a href="/about" class="px-4 py-2 text-gray-700 hover:bg-white hover:text-gray-900 rounded-lg transition-colors font-medium">
+        关于
+      </a>
+    </nav>
+
+    <!-- 最近更新 -->
+    <div class="mt-8">
+      <h3 class="text-sm font-semibold text-gray-700 mb-3 px-2">最近更新</h3>
+      <div class="space-y-1">
+        {recentPosts.map(post => (
+          <a href={`/posts/${post.data.number}`} class="block px-3 py-2 text-sm text-gray-700 hover:bg-white hover:text-gray-900 rounded-lg transition-colors line-clamp-2">
+            {post.data.title}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- 社交媒体图标 -->
+    <div class="flex items-center justify-center gap-4 mt-8 pt-6 border-t border-gray-200">
+      <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub" class="text-gray-600 hover:text-gray-900 transition-colors">
+        <span class="i-carbon-logo-github text-xl"></span>
+      </a>
+      <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter" class="text-gray-600 hover:text-gray-900 transition-colors">
+        <span class="i-carbon-logo-twitter text-xl"></span>
+      </a>
+      <a href="/rss.xml" target="_blank" rel="noopener" aria-label="RSS" class="text-gray-600 hover:text-gray-900 transition-colors">
+        <span class="i-carbon-rss text-xl"></span>
+      </a>
+      <a href="mailto:your@email.com" aria-label="Email" class="text-gray-600 hover:text-gray-900 transition-colors">
+        <span class="i-carbon-email text-xl"></span>
+      </a>
+    </div>
+  </div>
+</aside>

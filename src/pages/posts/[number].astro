@@ -20,9 +20,9 @@ const { data } = post;
 function formatDate(date: Date): string {
   return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+    month: '2-digit',
+    day: '2-digit',
+  }).replace(/\//g, '-');
 }
 ---
 
@@ -53,27 +53,16 @@ function formatDate(date: Date): string {
         )}
         
         <!-- 发布日期 -->
-        <time datetime={data.createdAt.toISOString()}>
-          📅 {formatDate(data.createdAt)}
-        </time>
+        <span class="flex items-center gap-1">
+          <span class="i-carbon-add-alt"></span>
+          发布: {formatDate(data.createdAt)}
+        </span>
         
-        <!-- 分类 -->
-        {data.category && (
-          <span>
-            {data.category.emoji} {data.category.name}
-          </span>
-        )}
-        
-        <!-- GitHub 链接 -->
-        <a 
-          href={data.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
-        >
-          <span class="i-carbon-logo-github"></span>
-          <span>在 GitHub 上查看</span>
-        </a>
+        <!-- 更新日期 -->
+        <span class="flex items-center gap-1">
+          <span class="i-carbon-update-now"></span>
+          更新: {formatDate(data.updatedAt)}
+        </span>
       </div>
       
       <!-- 标签 -->

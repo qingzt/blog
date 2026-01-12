@@ -15,88 +15,114 @@ const sortedPosts = posts.sort((a, b) =>
 function formatDate(date: Date): string {
   return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+    month: '2-digit',
+    day: '2-digit',
+  }).replace(/\//g, '-');
 }
+
+// 获取所有分类
+const categories = [...new Set(posts.map(p => p.data.category?.name).filter(Boolean))];
+
+// 获取所有标签及其计数
+const tagCounts = new Map<string, number>();
+posts.forEach(post => {
+  post.data.labels.forEach(label => {
+    tagCounts.set(label.name, (tagCounts.get(label.name) || 0) + 1);
+  });
+});
+const sortedTags = Array.from(tagCounts.entries()).sort((a, b) => b[1] - a[1]);
 ---
 
-<Layout title="首页 - My Blog">
-  <div class="space-y-8">
-    <!-- 页面标题 -->
-    <section class="text-center py-8">
-      <h1 class="text-4xl font-bold text-gray-900 mb-4">欢迎来到我的博客</h1>
-      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-        这里是我的技术分享空间，内容直接来自 GitHub Discussions。
-      </p>
-    </section>
+<Layout title="首页 - Achuan-2 的博客">
+  <div class="flex gap-6">
+    <!-- 主要内容区 -->
+    <div class="flex-1 min-w-0">
+      <!-- 顶部导航 -->
+      <nav class="flex flex-wrap items-center gap-2 mb-6 pb-4 border-b border-gray-200">
+        <a href="/" class="px-4 py-2 text-sm text-orange-600 bg-orange-50 font-medium rounded-lg transition-colors">近期发布</a>
+        <a href="/categories" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-white rounded-lg transition-colors">分类</a>
+        <a href="/tags" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-white rounded-lg transition-colors">标签</a>
+        <a href="/archives" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-white rounded-lg transition-colors">归档</a>
+        <a href="/guestbook" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-white rounded-lg transition-colors">留言板</a>
+        <a href="/search" class="ml-auto flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-white rounded-lg transition-colors">
+          <span class="i-carbon-shuffle"></span>
+          随机抽一篇文章吧
+        </a>
+      </nav>
 
-    <!-- 搜索入口 -->
-    <div class="flex justify-center">
-      <a 
-        href="/search" 
-        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors"
-      >
-        <span class="i-carbon-search"></span>
-        <span>搜索文章...</span>
-      </a>
+      <!-- 文章列表 -->
+      <div class="space-y-4">
+        {sortedPosts.length === 0 ? (
+          <div class="text-center py-20">
+            <p class="text-gray-500 text-lg">暂无文章</p>
+            <p class="text-sm text-gray-400 mt-2">
+              在 GitHub Discussions 中创建第一篇文章吧！
+            </p>
+          </div>
+        ) : (
+          sortedPosts.map((post) => (
+            <article class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all border border-gray-100">
+              <a href={`/posts/${post.data.number}`} class="block">
+                <h2 class="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors mb-3 line-clamp-2">
+                  {post.data.title}
+                </h2>
+                
+                <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                  {post.data.excerpt}
+                </p>
+                
+                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <!-- 发布日期 -->
+                  <span class="flex items-center gap-1">
+                    <span class="i-carbon-add-alt"></span>
+                    发布: {formatDate(post.data.createdAt)}
+                  </span>
+                  
+                  <!-- 更新日期 -->
+                  <span class="flex items-center gap-1">
+                    <span class="i-carbon-update-now"></span>
+                    更新: {formatDate(post.data.updatedAt)}
+                  </span>
+                </div>
+              </a>
+            </article>
+          ))
+        )}
+      </div>
     </div>
 
-    <!-- 文章列表 -->
-    <section class="space-y-6">
-      {sortedPosts.length === 0 ? (
-        <div class="text-center py-16">
-          <p class="text-gray-500">暂无文章</p>
-          <p class="text-sm text-gray-400 mt-2">
-            在 GitHub Discussions 中创建第一篇文章吧！
-          </p>
+    <!-- 右侧栏 -->
+    <aside class="w-72 flex-shrink-0 space-y-6 xl:block lg:hidden">
+      <!-- 分类索引 -->
+      <div class="bg-white rounded-lg p-5 shadow-sm border border-gray-100">
+        <h3 class="text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">分类索引</h3>
+        <div class="space-y-1">
+          {categories.slice(0, 10).map(category => {
+            const count = posts.filter(p => p.data.category?.name === category).length;
+            return (
+              <a href={`/category/${category}`} class="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors">
+                <span class="i-carbon-folder text-sm"></span>
+                <span class="flex-1">{category}</span>
+                <span class="text-xs text-gray-400">({count})</span>
+              </a>
+            );
+          })}
         </div>
-      ) : (
-        sortedPosts.map((post) => (
-          <article class="card group">
-            <a href={`/posts/${post.data.number}`} class="block">
-              <h2 class="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
-                {post.data.title}
-              </h2>
-              
-              <p class="text-gray-600 text-sm mb-4 line-clamp-2">
-                {post.data.excerpt}
-              </p>
-              
-              <div class="flex flex-wrap items-center gap-3 text-sm">
-                <!-- 日期 -->
-                <time class="text-gray-500" datetime={post.data.createdAt.toISOString()}>
-                  {formatDate(post.data.createdAt)}
-                </time>
-                
-                <!-- 分类 -->
-                {post.data.category && (
-                  <span class="text-gray-400">
-                    {post.data.category.emoji} {post.data.category.name}
-                  </span>
-                )}
-                
-                <!-- 标签 -->
-                {post.data.labels.length > 0 && (
-                  <div class="flex flex-wrap gap-1">
-                    {post.data.labels.map((label) => {
-                      const colors = getLabelColorClass(label.color);
-                      return (
-                        <span 
-                          class="tag"
-                          style={`background-color: ${colors.bg}; color: ${colors.text};`}
-                        >
-                          {label.name}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+      </div>
+
+      <!-- 标签索引 -->
+      <div class="bg-white rounded-lg p-5 shadow-sm border border-gray-100">
+        <h3 class="text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">标签索引</h3>
+        <div class="flex flex-wrap gap-2">
+          {sortedTags.slice(0, 20).map(([tag, count]) => (
+            <a href={`/tag/${tag}`} class="px-3 py-1 text-xs bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 rounded-full transition-colors">
+              {tag}
             </a>
-          </article>
-        ))
-      )}
-    </section>
+          ))}
+        </div>
+      </div>
+    </aside>
+  </div>
+</Layout>
   </div>
 </Layout>

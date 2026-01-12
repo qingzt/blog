@@ -1,4 +1,6 @@
 ---
+import Sidebar from '../components/Sidebar.astro';
+
 interface Props {
   title: string;
   description?: string;
@@ -23,46 +25,16 @@ const { title, description = '基于 GitHub Discussions 的极简静态博客' }
     
     <title>{title}</title>
   </head>
-  <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-      <nav class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" class="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
-          📝 My Blog
-        </a>
-        <div class="flex items-center gap-4">
-          <a href="/" class="text-gray-600 hover:text-gray-900 transition-colors">首页</a>
-          <a href="/search" class="text-gray-600 hover:text-gray-900 transition-colors">
-            <span class="i-carbon-search text-lg"></span>
-            <span class="sr-only">搜索</span>
-          </a>
-          <a 
-            href={`https://github.com/${import.meta.env.GITHUB_OWNER}/${import.meta.env.GITHUB_REPO}/discussions`}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <span class="i-carbon-logo-github text-lg"></span>
-            <span class="sr-only">GitHub</span>
-          </a>
-        </div>
-      </nav>
-    </header>
-
-    <main class="max-w-4xl mx-auto px-4 py-8">
-      <slot />
-    </main>
-
-    <footer class="border-t border-gray-200 mt-16">
-      <div class="max-w-4xl mx-auto px-4 py-8 text-center text-gray-500 text-sm">
-        <p>
-          由 <a href="https://astro.build" class="text-blue-600 hover:underline">Astro</a> 驱动，
-          内容来自 <a href="https://github.com/features/discussions" class="text-blue-600 hover:underline">GitHub Discussions</a>
-        </p>
-        <p class="mt-2">
-          © {new Date().getFullYear()} All rights reserved.
-        </p>
-      </div>
-    </footer>
+  <body class="min-h-screen bg-cream-100 text-gray-900 antialiased">
+    <!-- 左侧边栏 -->
+    <Sidebar />
+    
+    <!-- 主内容区域 -->
+    <div class="ml-80 min-h-screen lg:ml-80 md:ml-0">
+      <main class="max-w-6xl mx-auto px-6 py-8">
+        <slot />
+      </main>
+    </div>
 
     <!-- Pagefind JS -->
     <script src="/pagefind/pagefind-ui.js" is:inline></script>
