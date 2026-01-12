@@ -1,0 +1,44 @@
+---
+interface Props {
+  discussionNumber: number;
+}
+
+const { discussionNumber } = Astro.props;
+
+// 从环境变量获取 Giscus 配置
+const GISCUS_REPO = import.meta.env.GISCUS_REPO;
+const GISCUS_REPO_ID = import.meta.env.GISCUS_REPO_ID;
+const GISCUS_CATEGORY = import.meta.env.GISCUS_CATEGORY;
+const GISCUS_CATEGORY_ID = import.meta.env.GISCUS_CATEGORY_ID;
+---
+
+<div class="giscus-container">
+  <script
+    src="https://giscus.app/client.js"
+    data-repo={GISCUS_REPO}
+    data-repo-id={GISCUS_REPO_ID}
+    data-category={GISCUS_CATEGORY}
+    data-category-id={GISCUS_CATEGORY_ID}
+    data-mapping="number"
+    data-term={String(discussionNumber)}
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async
+  ></script>
+</div>
+
+<style>
+  .giscus-container {
+    min-height: 300px;
+  }
+  
+  .giscus-container :global(.giscus) {
+    width: 100%;
+  }
+</style>

@@ -1,0 +1,102 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { getLabelColorClass } from '../lib/github-loader';
+
+// 获取所有文章
+const posts = await getCollection('posts');
+
+// 按创建时间排序（最新优先）
+const sortedPosts = posts.sort((a, b) => 
+  b.data.createdAt.getTime() - a.data.createdAt.getTime()
+);
+
+// 格式化日期
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<Layout title="首页 - My Blog">
+  <div class="space-y-8">
+    <!-- 页面标题 -->
+    <section class="text-center py-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">欢迎来到我的博客</h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        这里是我的技术分享空间，内容直接来自 GitHub Discussions。
+      </p>
+    </section>
+
+    <!-- 搜索入口 -->
+    <div class="flex justify-center">
+      <a 
+        href="/search" 
+        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-gray-600 hover:border-gray-400 hover:text-gray-900 transition-colors"
+      >
+        <span class="i-carbon-search"></span>
+        <span>搜索文章...</span>
+      </a>
+    </div>
+
+    <!-- 文章列表 -->
+    <section class="space-y-6">
+      {sortedPosts.length === 0 ? (
+        <div class="text-center py-16">
+          <p class="text-gray-500">暂无文章</p>
+          <p class="text-sm text-gray-400 mt-2">
+            在 GitHub Discussions 中创建第一篇文章吧！
+          </p>
+        </div>
+      ) : (
+        sortedPosts.map((post) => (
+          <article class="card group">
+            <a href={`/posts/${post.data.number}`} class="block">
+              <h2 class="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
+                {post.data.title}
+              </h2>
+              
+              <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                {post.data.excerpt}
+              </p>
+              
+              <div class="flex flex-wrap items-center gap-3 text-sm">
+                <!-- 日期 -->
+                <time class="text-gray-500" datetime={post.data.createdAt.toISOString()}>
+                  {formatDate(post.data.createdAt)}
+                </time>
+                
+                <!-- 分类 -->
+                {post.data.category && (
+                  <span class="text-gray-400">
+                    {post.data.category.emoji} {post.data.category.name}
+                  </span>
+                )}
+                
+                <!-- 标签 -->
+                {post.data.labels.length > 0 && (
+                  <div class="flex flex-wrap gap-1">
+                    {post.data.labels.map((label) => {
+                      const colors = getLabelColorClass(label.color);
+                      return (
+                        <span 
+                          class="tag"
+                          style={`background-color: ${colors.bg}; color: ${colors.text};`}
+                        >
+                          {label.name}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </a>
+          </article>
+        ))
+      )}
+    </section>
+  </div>
+</Layout>

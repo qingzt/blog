@@ -1,0 +1,193 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Giscus from '../../components/Giscus.astro';
+import { getCollection } from 'astro:content';
+import { getLabelColorClass } from '../../lib/github-loader';
+
+// 生成静态路径
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({
+    params: { number: String(post.data.number) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { data } = post;
+
+// 格式化日期
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<Layout title={`${data.title} - My Blog`} description={data.excerpt}>
+  <article class="prose prose-lg max-w-none" data-pagefind-body>
+    <!-- 文章头部 -->
+    <header class="not-prose mb-8 pb-8 border-b border-gray-200">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4" data-pagefind-meta="title">
+        {data.title}
+      </h1>
+      
+      <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+        <!-- 作者信息 -->
+        {data.author && (
+          <a 
+            href={data.author.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-2 hover:text-gray-900 transition-colors"
+          >
+            <img 
+              src={data.author.avatarUrl} 
+              alt={data.author.login}
+              class="w-6 h-6 rounded-full"
+            />
+            <span>{data.author.login}</span>
+          </a>
+        )}
+        
+        <!-- 发布日期 -->
+        <time datetime={data.createdAt.toISOString()}>
+          📅 {formatDate(data.createdAt)}
+        </time>
+        
+        <!-- 分类 -->
+        {data.category && (
+          <span>
+            {data.category.emoji} {data.category.name}
+          </span>
+        )}
+        
+        <!-- GitHub 链接 -->
+        <a 
+          href={data.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          <span class="i-carbon-logo-github"></span>
+          <span>在 GitHub 上查看</span>
+        </a>
+      </div>
+      
+      <!-- 标签 -->
+      {data.labels.length > 0 && (
+        <div class="flex flex-wrap gap-2 mt-4">
+          {data.labels.map((label) => {
+            const colors = getLabelColorClass(label.color);
+            return (
+              <span 
+                class="tag"
+                style={`background-color: ${colors.bg}; color: ${colors.text};`}
+                title={label.description || undefined}
+              >
+                {label.name}
+              </span>
+            );
+          })}
+        </div>
+      )}
+    </header>
+
+    <!-- 文章内容 -->
+    <div class="github-markdown" set:html={data.bodyHTML} />
+  </article>
+
+  <!-- 返回链接 -->
+  <div class="mt-12 pt-8 border-t border-gray-200">
+    <a 
+      href="/" 
+      class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
+    >
+      <span class="i-carbon-arrow-left"></span>
+      <span>返回首页</span>
+    </a>
+  </div>
+
+  <!-- 评论区 -->
+  <section class="mt-12 pt-8 border-t border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">💬 评论</h2>
+    <Giscus discussionNumber={data.number} />
+  </section>
+</Layout>
+
+<style is:global>
+  /* GitHub Markdown 样式覆盖 */
+  .github-markdown {
+    @apply text-gray-800 leading-relaxed;
+  }
+  
+  .github-markdown h1,
+  .github-markdown h2,
+  .github-markdown h3,
+  .github-markdown h4 {
+    @apply font-bold text-gray-900 mt-8 mb-4;
+  }
+  
+  .github-markdown h1 { @apply text-2xl; }
+  .github-markdown h2 { @apply text-xl; }
+  .github-markdown h3 { @apply text-lg; }
+  
+  .github-markdown p {
+    @apply my-4;
+  }
+  
+  .github-markdown a {
+    @apply text-blue-600 hover:underline;
+  }
+  
+  .github-markdown code {
+    @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono;
+  }
+  
+  .github-markdown pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4;
+  }
+  
+  .github-markdown pre code {
+    @apply bg-transparent p-0 text-inherit;
+  }
+  
+  .github-markdown ul,
+  .github-markdown ol {
+    @apply my-4 pl-6;
+  }
+  
+  .github-markdown ul { @apply list-disc; }
+  .github-markdown ol { @apply list-decimal; }
+  
+  .github-markdown li {
+    @apply my-1;
+  }
+  
+  .github-markdown blockquote {
+    @apply border-l-4 border-gray-300 pl-4 italic text-gray-600 my-4;
+  }
+  
+  .github-markdown img {
+    @apply max-w-full h-auto rounded-lg my-4;
+  }
+  
+  .github-markdown table {
+    @apply w-full border-collapse my-4;
+  }
+  
+  .github-markdown th,
+  .github-markdown td {
+    @apply border border-gray-300 px-4 py-2 text-left;
+  }
+  
+  .github-markdown th {
+    @apply bg-gray-100 font-semibold;
+  }
+  
+  .github-markdown hr {
+    @apply my-8 border-gray-200;
+  }
+</style>
